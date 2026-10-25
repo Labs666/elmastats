@@ -178,7 +178,7 @@
     }
 
     echo("</table><br/><br/>");
-    echo("<b>Sumary</b><br/><br/>");
+    echo("<b>Victories</b><br/><br/>");
     echo("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
     for ($x = 0;$x < $c;$x++) {
       echo("<tr><td>" . man($dudes[$x]) . "&nbsp;</td>");
