@@ -141,7 +141,7 @@
     }
 
     echo("</table><br/><br/>");
-    echo("<b>Other stats</b><br/><br/>");
+    echo("<b>Team records</b><br/><br/>");
     echo("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
     for ($x = 0; $x < $c; $x++) {
       if (!isset($victories[$x])) {
@@ -158,7 +158,7 @@
     });
     foreach ($victories as $x => $victoryCount) {
       echo("<tr><td>" . man($dudes[$x]) . "&nbsp;</td>");
-      echo("<td>" . $victoryCount . " victories</td></tr>");
+      echo("<td>" . $victoryCount . " records</td></tr>");
     }
     echo("<tr><td colspan=\"2\">&nbsp;</td></tr>");
     echo("<tr><td><b>Best TT</b>&nbsp;</td><td>" . man($dudes[$ttrman]) . "</td></tr>");
