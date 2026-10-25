@@ -57,12 +57,12 @@
   }
   echo("</div>");
   echo("<div class=\"lefty\">");
-  echo("<br/><b>Top10 victories</b><br/><br/>");
+  echo("<br/><b>Top10 records</b><br/><br/>");
   arsort($victories, SORT_NUMERIC);
   echo("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
   foreach ($victories as $nick => $wins) {
     echo("<tr><td>" . man($nick) . "&nbsp;</td>");
-    echo("<td>" . $wins . " victories</td></tr>");
+    echo("<td>" . $wins . " records</td></tr>");
   }
   echo("<tr><td colspan=\"2\">&nbsp;</td></tr>");
   echo("<tr><td><b>Combined TT:</b>&nbsp;</td><td>" .
