@@ -57,8 +57,15 @@
   }
   echo("</div>");
   echo("<div class=\"lefty\">");
-  echo("<br/><b>Records</b><br/><br/>");
-  arsort($victories, SORT_NUMERIC);
+  echo("<br/><b>Top10 records</b><br/><br/>");
+  uksort($victories, function ($a, $b) use ($victories) {
+    $winsOrder = $victories[$b] <=> $victories[$a];
+    if ($winsOrder !== 0) {
+      return $winsOrder;
+    }
+
+     return strcasecmp($a, $b);
+  });
   echo("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
   foreach ($victories as $nick => $wins) {
     echo("<tr><td>" . man($nick) . "&nbsp;</td>");
