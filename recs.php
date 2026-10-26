@@ -8,6 +8,8 @@
   $utimes = array();
   $unicks = array();
   $c = 0;
+  $victories = array();
+  $combinedTT = 0;
   foreach ($users as $cItem) {
     $utimes[] = stateTimes($cItem["nick"], $cItem["elmaname"]);
     $unicks[] = $cItem["nick"];
@@ -25,6 +27,14 @@
         $top[] = $cItem;
     }
     usort($top, "cmp");
+    $combinedTT += isset($top[0]["time"])
+      ? (int)$top[0]["time"]
+      : 60000;
+
+    if (!empty($top[0]["nick"])) {
+      $winner = $top[0]["nick"];
+      $victories[$winner] = ($victories[$winner] ?? 0) + 1;
+    }
     
     echo("<table class=\"times\">\n");
     echo("<tr><th class=\"times\" width=\"20px\">" . ($x+1) . ".</th>");
@@ -46,6 +56,28 @@
     echo("<br/>");
     if ($x == 26) echo("</div><div class=\"lefty\">");
   }
+  echo("</div>");
+  echo("<div class=\"lefty\">");
+  echo("<br/><b>Best replays</b><br/><br/>");
+
+  uksort($victories, function ($a, $b) use ($victories) {
+    $recordOrder = $victories[$b] <=> $victories[$a];
+    if ($recordOrder !== 0) {
+      return $recordOrder;
+    }
+
+    return strcasecmp($a, $b);
+  });
+
+  echo("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+  foreach ($victories as $nick => $wins) {
+    echo("<tr><td>" . man($nick) . "&nbsp;</td>");
+    echo("<td>" . $wins . " replays</td></tr>");
+  }
+  echo("<tr><td colspan=\"2\">&nbsp;</td></tr>");
+  echo("<tr><td><b>Combined TT:</b>&nbsp;</td><td>" .
+    coloredtttime($combinedTT, true) . "</td></tr>");
+  echo("</table>");
   echo("</div>");
 ?>
 <?php include("tpo.php"); ?>
