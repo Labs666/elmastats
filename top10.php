@@ -57,7 +57,7 @@
   }
   echo("</div>");
   echo("<div class=\"lefty\">");
-  echo("<br/><b>Top10 records</b><br/><br/>");
+  echo("<br/><b>Records</b><br/><br/>");
   uksort($victories, function ($a, $b) use ($victories) {
     $winsOrder = $victories[$b] <=> $victories[$a];
     if ($winsOrder !== 0) {
