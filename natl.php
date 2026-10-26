@@ -170,7 +170,14 @@
     echo("</div>");
     echo("<div class=\"lefty\">");
     echo("<br/><b>National records</b><br/><br/>");
-    arsort($victories, SORT_NUMERIC);
+    uksort($victories, function ($a, $b) use ($victories) {
+      $recordOrder = $victories[$b] <=> $victories[$a];
+      if ($recordOrder !== 0) {
+        return $recordOrder;
+      }
+
+      return strcasecmp($a, $b);
+    });
     echo("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
     foreach ($victories as $man => $v) {
     echo("<tr><td>" . man($man) . "&nbsp;</td>");
