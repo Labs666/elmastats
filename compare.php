@@ -48,7 +48,7 @@
     $str .= "u" . ($x+1) . "=" . $dudes[$x] . "&amp;";
     echo("</select>");
   }
-  echo("&nbsp;<input type=\"submit\" value=\"Update\"/>");
+  echo("<br/><br/><input type=\"submit\" value=\"Update\"/>");
   echo("</form></td></tr></table><br/>");
 
 
@@ -103,22 +103,37 @@
         if ($y == $trman || $trman == -1) $str = "";
         if ($utimes[$y][$x+1][1] == 0) $str = "";
         //echo("<td class=\"times\" title=\"" . $str . "\"><center>" . $bulle . formatElmaTime($utimes[$y][$x+1][1], true) . $bulle2 . "</center></td>");
-        echo("<td class=\"times\" title=\"" . $str . "\"><center>" . $bulle . sttime($dudes[$y], $x+1, $utimes[$y][$x+1][1], true, $trman == $y ? true : false) . $bulle2 . "</center></td>");
+        $playerTime = (int)($utimes[$y][$x + 1][1] ?? 0);
+        $timeHtml = ($playerTime > 0)
+          ? sttime($dudes[$y], $x + 1, $playerTime, true, $trman == $y)
+          : "";
+        echo("<td class=\"times\" title=\"" . $str . "\"><center>" . $bulle . $timeHtml . $bulle2 . "</center></td>");
       }
       if ($c == 2) {
-        if ($utimes[0][$x+1][1] > 0 && $utimes[1][$x+1][1] > 0) {
-          if ($utimes[1][$x+1][1] > $utimes[0][$x+1][1]) { $wry = "-"; } else { $wry = "+"; }
-          $diff2 = abs($utimes[0][$x+1][1]-$utimes[1][$x+1][1]);
-          $str = $wry . formatElmaTime($diff2, false);
-          if ($diff2 == 0) $str = "No diff.";
-          echo("<td class=\"times\"><center>" . $str . "</center></td>");
-        } else {
-          echo("<td class=\"times\"></td>");
-        }
-      }
-      echo("</tr>");
+        $time1 = (int)($utimes[0][$x + 1][1] ?? 0);
+        $time2 = (int)($utimes[1][$x + 1][1] ?? 0);
+
+      if ($time1 <= 0) $time1 = 60000;
+      if ($time2 <= 0) $time2 = 60000;
+
+      if ($time2 > $time1) {
+        $wry = "-";
+      } else {
+        $wry = "+";
     }
 
+    $diff2 = abs($time1 - $time2);
+    $diffText = ($diff2 === 0) ? "No diff." : $wry . formatElmaTime($diff2);
+
+    echo("<td class=\"times\"><center>" . $diffText . "</center></td>");
+    }
+    echo("</tr>");
+    }
+    echo("<tr>");
+    for ($column = 0; $column < 1 + $c + ($c == 2 ? 1 : 0); $column++) {
+    echo("<th class=\"times\"></th>");
+    }
+    echo("</tr>");
     echo("<tr><td class=\"times\">Total Time</td>");
     $ttrman = 0;
     $tts = array();
@@ -163,13 +178,14 @@
     }
 
     echo("</table><br/><br/>");
-    echo("<b>Sumary</b><br/><br/>");
+    echo("<b>Victories</b><br/><br/>");
     echo("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
     for ($x = 0;$x < $c;$x++) {
       echo("<tr><td>" . man($dudes[$x]) . "&nbsp;</td>");
       echo("<td>" . ($victories[$x]+0) . " victories</td></tr>");
     }
-    echo("<tr><td>Best TT&nbsp;</td><td>" . man($dudes[$ttrman]) . "</td></tr>");
+    echo("<tr><td colspan=\"2\">&nbsp;</td></tr>");
+    echo("<tr><td><b>Best TT</b>&nbsp;</td><td>" . man($dudes[$ttrman]) . "</td></tr>");
     echo("</table>");
   }
 ?>
