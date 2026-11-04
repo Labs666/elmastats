@@ -75,7 +75,53 @@
       $sumofdiff = 0;
       for ($x = 0;$x < 54;$x++) {
         echo("<tr><td class=\"times\">" . internal($x+1, true) . "</td>");
-        $t = target($utimes[$x+1][1], $x+1);
+        $bestTime = (int)($utimes[$x + 1][1] ?? 0);
+        if ($bestTime <= 0) {
+          $tt += 60000;
+          $ttIfBeatTargets += 60000;
+          $avgtt += 600000;
+
+          echo("<td class=\"times\"><center></center></td>");
+          echo("<td class=\"times\"></td>"); // Spacer
+          echo("<td class=\"times\"><center>" . sttime($cItem["nick"], $x + 1, 60000, true, false, target(60000, $x + 1)) . "</center></td>");
+          echo("<td class=\"times\"><center>-</center></td>");
+          echo("<td class=\"times\"></td>"); // Spacer
+          $emptyTarget = target(60000, $x + 1);
+          if ($emptyTarget > 0) {
+            $nextTargetTime = (int)$targets[$x + 1][$emptyTarget - 1];
+            $ttIfBeatTargets -= 60000 - $nextTargetTime;
+          }
+          echo("<td class=\"times\"><center>" . ($emptyTarget > 0 ? tartime($x + 1, $targets[$x + 1][$emptyTarget - 1], $emptyTarget - 1) : "-") . "</center></td>");
+          $nextTargetTime = ($emptyTarget > 0)
+          ? (int)$targets[$x + 1][$emptyTarget - 1]
+          : 0;
+
+          echo("<td class=\"times\"><center>" .
+          ($emptyTarget > 0
+          ? "+" . formatElmaTime(60000 - $nextTargetTime)
+          : "-") .
+          "</center></td>");
+          echo("</tr>");
+          continue;
+        }
+        $t = target($bestTime, $x + 1);
+
+        if ($bestTime <= 0) {
+          $tt += 60000;
+          $ttIfBeatTargets += 60000;
+          $avgtt += 600000;
+
+          if ($t > 0) {
+            $ttChangeIfBeatTarget = abs((int)$targets[$x + 1][$t - 1]);
+            $ttIfBeatTargets -= $ttChangeIfBeatTarget;
+          }
+
+          for ($column = 0; $column < 7; $column++) {
+            echo("<td class=\"times\"></td>");
+          }
+          echo("</tr>");
+          continue;
+        }
         echo("<td class=\"times\"><center>" . sttime($cItem["nick"], $x+1, $utimes[$x+1][1], true, false, $t) . "</center></td>");
         echo("<td class=\"times\"></td>"); // Spacer
         $avg = 0;
@@ -108,6 +154,11 @@
       $TTandAvgDiff = $avgtt - $tt;
       $sumofdiff = $tt - $ttIfBeatTargets;
 
+      echo("<tr>");
+      for ($column = 0; $column < 8; $column++) {
+      echo("<th class=\"times\"></th>");
+      }
+      echo("</tr>");
       echo("<tr><td class=\"times\">Total time</td>");
       echo("<td class=\"times\"><center>" . coloredtttime($tt, true) . "</center></td>");
       echo("<td class=\"times\"></td>"); // Spacer
@@ -137,16 +188,29 @@
         if ($x+1 < 10) $str = "&nbsp;";
         //echo("<tr><td class=\"times\">" . ($x+1) . ". " . $str . $intnames[$x+1] . "</td>");
         echo("<tr><td class=\"times\">" . internal($x+1, true, false, false) . "</td>");
+        $bestTime = (int)($utimes[$x + 1][1] ?? 0);
+
+        if ($bestTime <= 0) {
+          for ($y = 0; $y < 10; $y++) {
+            echo("<td class=\"times\"></td>");
+          }
+          echo("<td class=\"times\"><center>" . sttime($cItem["nick"], $x + 1, 60000, true, false, target(60000, $x + 1)) . "</center></td>");
+          echo("</tr>");
+          continue;
+        }
         $avg = 0;
         for ($y = 0;$y < 10;$y++) {
           //if ($y == 0) {
           //echo("<td class=\"times\"" . $tcolors[target($utimes[$x+1][$y+1], $x)] . "><center>" . sttime($cItem["nick"], $x+1, $utimes[$x+1][$y+1], true) . "</center></td>");
-          $t = target($utimes[$x+1][$y+1], $x+1);
+          $value = (int)($utimes[$x + 1][$y + 1] ?? 0);
 
-          echo("<td class=\"times\"><center>" . sttime($cItem["nick"], $x+1, $utimes[$x+1][$y+1], true, false, $t) . "</center></td>");
-          //echo("<td class=\"times\"><center>" . sttime($cItem["nick"], $x+1, $utimes[$x+1][$y+1], true, false) . "</center></td>");
-
-          if ($y == 0) $targetz[$t]++;
+          if ($value > 0) {
+            $t = target($value, $x + 1);
+            echo("<td class=\"times\"><center>" . sttime($cItem["nick"], $x + 1, $value, true, false, $t) . "</center></td>");
+            if ($y == 0) $targetz[$t]++;
+          } else {
+            echo("<td class=\"times\"></td>");
+          }
           /*} else {
             echo("<td class=\"times\"><center>" . formatElmaTime($utimes[$x+1][$y+1], true) . "</center></td>");
           }*/
@@ -158,9 +222,14 @@
         //echo("<td class=\"times\"><center>" . formatElmaTime(round($avg/10), true) . "</center></td>");
         echo("</tr>");
       }
+      echo("<tr>");
+      for ($column = 0; $column < 12; $column++) {
+      echo("<th class=\"times\"></th>");
+      }
+      echo("</tr>");
       echo("<tr><td class=\"times\">TT</td>");
-      echo("<td class=\"times\" colspan=\"10\"><center>" . formatElmaTime($tt, true) . "</center></td>");
-      echo("<td class=\"times\"><center>" . formatElmaTime($avgtt, true) . "</center></td>");
+      echo("<td class=\"times\" colspan=\"10\"><center>" . coloredtttime($tt, true) . "</center></td>");
+      echo("<td class=\"times\"><center>" . coloredtttime($avgtt, true) . "</center></td>");
       echo("</tr>");
       echo("</table>");
       echo("</div>");
@@ -208,7 +277,6 @@
       $ts = "s"; if ($targetz[8] == 1) $ts = "";
       echo($targetz[8] . " finished time" . $ts . "<br/>");
 
-      echo("<br/><br/>");
 echo("<br/><br/><b>Compare to...</b><br/><br/>");
 
 echo('<form action="compare.php" method="get">');
