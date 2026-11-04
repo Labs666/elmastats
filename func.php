@@ -246,11 +246,17 @@
     }
 	}
 
-  function addub($str, $player) {
-    echo("URL: <input type=\"text\" size=\"19\" readonly=\"readonly\" value=\"https://stats.elma.online/" . $str . "\"/> " .
-         "BBCODE: <input type=\"text\" size=\"19\" readonly=\"readonly\" value=\"[url=https://stats.elma.online/player.php?player=" . $player . "][img]https://stats.elma.online/" . $str . "[/img][/url]\"/> " .
-         "<div class=\"ubwrap\"><img src=\"" . $str . "\" alt=\"TT\"/></div><br/>");
-  }
+function addub($str, $player) {
+  $gapStyle = (
+    strpos($str, "bub.php") !== false &&
+    strpos($str, "s=") !== false
+  ) ? ' style="margin-top: 1px;"' : '';
+
+  echo("URL: <input type=\"text\" size=\"19\" readonly=\"readonly\" value=\"https://stats.elma.online/" . $str . "\"/> " .
+       "BBCODE: <input type=\"text\" size=\"19\" readonly=\"readonly\" value=\"[url=https://stats.elma.online/player.php?player=" . $player . "][img]https://stats.elma.online/" . $str . "[/img][/url]\"/> " .
+       "<div class=\"ubwrap\"" . $gapStyle . "><img src=\"" . $str . "\" alt=\"TT\"/></div>" .
+       "<div style=\"clear: both; height: 0; line-height: 0;\"></div>");
+}
 
   function fileCount($path, $ext = "") {
     $files = 0;
