@@ -170,17 +170,23 @@
     echo("</div>");
     echo("<div class=\"lefty\">");
     echo("<br/><b>National records</b><br/><br/>");
-    arsort($victories, SORT_NUMERIC);
+    uksort($victories, function ($a, $b) use ($victories) {
+      $recordOrder = $victories[$b] <=> $victories[$a];
+      if ($recordOrder !== 0) {
+        return $recordOrder;
+      }
+
+      return strcasecmp($a, $b);
+    });
     echo("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
     foreach ($victories as $man => $v) {
-      echo("<tr><td>" . man($man) . "&nbsp;</td>");
-      echo("<td>" . $v . " records</td></tr>");
+    echo("<tr><td>" . man($man) . "&nbsp;</td>");
+    echo("<td>" . $v . " records</td></tr>");
     }
-    echo("<br/>");
-      echo("<tr><td colspan=\"2\">&nbsp;</td></tr>");
-      echo("<tr><td><b>National TT:</b>&nbsp;</td>");
-      echo("<td><b>" . coloredtttime($besttt, true) . "</b></td></tr>");
-      echo("</table>");
+    echo("<tr><td colspan=\"2\">&nbsp;</td></tr>");
+    echo("<tr><td><b>National TT:</b>&nbsp;</td>");
+    echo("<td>" . coloredtttime($besttt, true) . "</td></tr>");
+    echo("</table>");
     echo("</div>");
   }
 ?>
