@@ -43,11 +43,11 @@
         if (!$xTime) {
           $AvgTime += 60000;
         } else {
-          $AvgTime += (int)$xTime;
+          $AvgTime += min((int)$xTime, 60000);
           $finished++;
         }
       }
-      $avgtt += $AvgTime/10;
+      $avgtt += round($AvgTime / 10);
     }
 
     // Store in array
