@@ -180,9 +180,28 @@
     echo("</table><br/><br/>");
     echo("<b>Victories</b><br/><br/>");
     echo("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
-    for ($x = 0;$x < $c;$x++) {
-      echo("<tr><td>" . man($dudes[$x]) . "&nbsp;</td>");
-      echo("<td>" . ($victories[$x]+0) . " victories</td></tr>");
+    $victoryRows = array();
+
+    for ($x = 0; $x < $c; $x++) {
+      $wins = (int)($victories[$x] ?? 0);
+      if ($wins > 0) {
+        $victoryRows[] = array(
+          "nick" => $dudes[$x],
+          "wins" => $wins
+        );
+      }
+    }
+
+    usort($victoryRows, function ($a, $b) {
+      if ($a["wins"] !== $b["wins"]) {
+        return $b["wins"] <=> $a["wins"];
+      }
+      return strcasecmp($a["nick"], $b["nick"]);
+    });
+
+    foreach ($victoryRows as $row) {
+      echo("<tr><td>" . man($row["nick"]) . "&nbsp;</td>");
+      echo("<td>" . $row["wins"] . " victories</td></tr>");
     }
     echo("<tr><td colspan=\"2\">&nbsp;</td></tr>");
     echo("<tr><td><b>Best TT</b>&nbsp;</td><td>" . man($dudes[$ttrman]) . "</td></tr>");
