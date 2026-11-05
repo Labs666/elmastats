@@ -233,7 +233,7 @@
     echo("</table>");
     echo("</div>");
     echo('<table id="teamCombinedTT" data-team-size="' . $c . '" class="times" cellpadding="2" style="width:100%; table-layout:fixed; border-collapse:separate; border-spacing:0; border-top:none !important; border-left:1px solid #000000 !important; border-bottom:1px solid #000000 !important;">');
-    echo('<tr><td class="times" style="width:180px; border-top:none !important; border-left:none !important; border-bottom:none !important; border-right:1px dotted #000000 !important; text-align:left;">Combined TT</td><td class="times" style="text-align:center; border:none !important;"><center>' . coloredtttime($teamtt, true) . '</center></td></tr>');
+    echo('<tr><td class="times" style="width:180px; border-top:none !important; border-left:none !important; border-bottom:none !important; border-right:1px dotted #000000 !important; text-align:left;">Combined TT</td><td class="times" style="text-align:left; border:none !important;"><center><span style="display:inline-block; transform:translateX(' . ($c > 7 ? '-2ch' : '0px') . ');">' . coloredtttime($teamtt, true) . '</span></center></td></tr>');
     echo('</table>');
     echo('<div id="teamScrollBottom" style="display:' . $scrollbarDisplay . ' !important; max-width:100%; overflow-x:auto; overflow-y:hidden; scrollbar-width:thin; height:16px; transform:translateY(-6px);"><div id="teamScrollBottomInner" style="height:1px;"></div></div>');
 echo('<script>
@@ -328,6 +328,9 @@ echo('<script>
       return strcasecmp($dudes[$a], $dudes[$b]);
     });
     foreach ($victories as $x => $victoryCount) {
+      if ($victoryCount <= 0) {
+        continue;
+      }
       echo("<tr><td>" . man($dudes[$x]) . "&nbsp;</td>");
       echo("<td>" . $victoryCount . " records</td></tr>");
     }
