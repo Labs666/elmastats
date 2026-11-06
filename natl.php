@@ -108,9 +108,8 @@
       $ctt = 0;
       $cItem["nick"] = $unicks[$y];
       for ($x = 0;$x < 54;$x++) {
-        $cTime = $utimes[$y][$x+1][1];
-        if (!$cTime) $cTime = 60000;
-        $ctt += (int)$cTime;
+        $cTime = (int)($utimes[$y][$x + 1][1] ?? 0);
+        $ctt += ($cTime > 0) ? min($cTime, 60000) : 60000;
       }
       if ($ctt < 60000*54) {
         $cItem["time"] = $ctt;
