@@ -30,16 +30,15 @@
     //kalkulate tt & avg
     $tt = 0;
     $avg = 0;
-for ($x = 0; $x < 54; $x++) {
-    $cTime = (int)($utimes[$x + 1][1] ?? 0);
-    if ($cTime === 0) $cTime = 60000;
-    $tt += $cTime;
+  for ($x = 0; $x < 54; $x++) {
+      $cTime = (int)($utimes[$x + 1][1] ?? 0);
+      $tt += ($cTime > 0) ? min($cTime, 60000) : 60000;
 
-    for ($y = 0; $y < 10; $y++) {
-        $time = (int)($utimes[$x + 1][$y + 1] ?? 0);
-        $avg += ($time === 0) ? 60000 : $time;
-    }
-    }
+      for ($y = 0; $y < 10; $y++) {
+          $time = (int)($utimes[$x + 1][$y + 1] ?? 0);
+          $avg += ($time > 0) ? min($time, 60000) : 60000;
+      }
+  }
     $strtt = formatElmaTime($tt);
     $stravg = formatElmaTime(round($avg/10));
   } else {
