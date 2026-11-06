@@ -245,11 +245,41 @@ if (isset($_POST["OGnick"]) && in_array($_SESSION["nick"], $admins, true)) {
     <?php
       echo("<div id=\"ahead\">" . man($_SESSION["nick"]));
       $utimes = stateTimes($_SESSION["nick"], $users[$_SESSION["nick"]]["elmaname"]);
-      if ($utimes != NULL) {
-        $tt = 0;
-        for ($x = 0;$x < 54;$x++) $tt += ($utimes[$x+1][1] > 0 ? $utimes[$x+1][1] : 60000);
-        echo("<br/>TT: " . coloredtttime($tt));
-      }
+if ($utimes != NULL) {
+  $tt = 0;
+  for ($x = 0; $x < 54; $x++) {
+    $time = (int)($utimes[$x + 1][1] ?? 0);
+    $tt += ($time > 0) ? min($time, 60000) : 60000;
+  }
+
+  $ttRank = 1;
+  foreach ($users as $rankUser) {
+    $rankNick = $rankUser["nick"] ?? "";
+
+    if ($rankNick === "" || $rankNick === $_SESSION["nick"]
+        || $rankNick === "!.gitignore" || $rankNick === "*") {
+      continue;
+    }
+
+    $rankTimes = stateTimes($rankNick, $rankUser["elmaname"] ?? "");
+    if ($rankTimes === NULL) {
+      continue;
+    }
+
+    $rankTotal = 0;
+    for ($x = 0; $x < 54; $x++) {
+      $time = (int)($rankTimes[$x + 1][1] ?? 0);
+      $rankTotal += ($time > 0) ? min($time, 60000) : 60000;
+    }
+
+    if ($rankTotal < 60000 * 54 && $rankTotal < $tt) {
+      $ttRank++;
+    }
+  }
+
+  echo("<br/>TT: " . coloredtttime($tt) .
+       ($tt < 60000 * 54 ? " (" . $ttRank . ".)" : ""));
+}
       echo("</div>");
     ?>
   </div>
