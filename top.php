@@ -247,7 +247,10 @@ if (isset($_POST["OGnick"]) && in_array($_SESSION["nick"], $admins, true)) {
       $utimes = stateTimes($_SESSION["nick"], $users[$_SESSION["nick"]]["elmaname"]);
       if ($utimes != NULL) {
         $tt = 0;
-        for ($x = 0;$x < 54;$x++) $tt += ($utimes[$x+1][1] > 0 ? $utimes[$x+1][1] : 60000);
+        for ($x = 0; $x < 54; $x++) {
+          $time = (int)($utimes[$x + 1][1] ?? 0);
+          $tt += ($time > 0) ? min($time, 60000) : 60000;
+        }
         echo("<br/>TT: " . coloredtttime($tt));
       }
       echo("</div>");
