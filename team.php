@@ -148,17 +148,17 @@
     for ($x = 0;$x < 54;$x++) {
       echo("<tr><td class=\"times\">" . internal($x+1, true) . "</td>");
       $trman = 0;
-      $trtajm = $utimes[0][$x+1][1];
-      if (!$trtajm) $trtajm = 60000;
-      for ($y = 1;$y < $c;$y++) {
-        if ($utimes[$y][$x+1][1] > 0) {
-          if ($utimes[$y][$x+1][1] < $trtajm) {
-            $trtajm = $utimes[$y][$x+1][1];
+      $firstTime = (int)($utimes[0][$x + 1][1] ?? 0);
+      $trtajm = ($firstTime > 0) ? min($firstTime, 60000) : 60000;
+      for ($y = 1; $y < $c; $y++) {
+        $time = (int)($utimes[$y][$x + 1][1] ?? 0);
+        if ($time > 0) {
+          $time = min($time, 60000);
+          if ($time < $trtajm) {
+            $trtajm = $time;
             $trman = $y;
-          } else {
-            if ($utimes[$y][$x+1][1] == $trtajm) {
-              $trman = -1;
-            }
+          } elseif ($time == $trtajm) {
+            $trman = -1;
           }
         }
       }
@@ -189,6 +189,9 @@
         if ($y == $trman || $trman == -1) $str = "";
 
           $playerTime = (int)($utimes[$y][$x + 1][1] ?? 0);
+          if ($playerTime <= 0) {
+            $str = "";
+          }
           $timeHtml = ($playerTime <= 0)
           ? ""
           : sttime($dudes[$y], $x + 1, $playerTime, true, $trman == $y, $t);
@@ -212,7 +215,7 @@
       $tt = 0;
       for ($x = 0;$x < 54;$x++) {
       $time = (int)($utimes[$y][$x + 1][1] ?? 0);
-      $tt += ($time > 0) ? $time : 60000;
+      $tt += ($time > 0) ? min($time, 60000) : 60000;
       }
       $tts[$y] = $tt;
       if ($tts[$y] < $tts[$ttrman]) $ttrman = $y;
@@ -233,7 +236,7 @@
     echo("</table>");
     echo("</div>");
     echo('<table id="teamCombinedTT" data-team-size="' . $c . '" class="times" cellpadding="2" style="width:100%; table-layout:fixed; border-collapse:separate; border-spacing:0; border-top:none !important; border-left:1px solid #000000 !important; border-bottom:1px solid #000000 !important;">');
-    echo('<tr><td class="times" style="width:180px; border-top:none !important; border-left:none !important; border-bottom:none !important; border-right:1px dotted #000000 !important; text-align:left;">Combined TT</td><td class="times" style="text-align:center; border:none !important;"><center>' . coloredtttime($teamtt, true) . '</center></td></tr>');
+    echo('<tr><td class="times" style="width:180px; border-top:none !important; border-left:none !important; border-bottom:none !important; border-right:1px dotted #000000 !important; text-align:left;">Combined TT</td><td class="times" style="text-align:left; border:none !important;"><center><span style="display:inline-block; transform:translateX(' . ($c > 7 ? '-2ch' : '0px') . ');">' . coloredtttime($teamtt, true) . '</span></center></td></tr>');
     echo('</table>');
     echo('<div id="teamScrollBottom" style="display:' . $scrollbarDisplay . ' !important; max-width:100%; overflow-x:auto; overflow-y:hidden; scrollbar-width:thin; height:16px; transform:translateY(-6px);"><div id="teamScrollBottomInner" style="height:1px;"></div></div>');
 echo('<script>
@@ -328,6 +331,9 @@ echo('<script>
       return strcasecmp($dudes[$a], $dudes[$b]);
     });
     foreach ($victories as $x => $victoryCount) {
+      if ($victoryCount <= 0) {
+        continue;
+      }
       echo("<tr><td>" . man($dudes[$x]) . "&nbsp;</td>");
       echo("<td>" . $victoryCount . " records</td></tr>");
     }
