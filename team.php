@@ -148,17 +148,17 @@
     for ($x = 0;$x < 54;$x++) {
       echo("<tr><td class=\"times\">" . internal($x+1, true) . "</td>");
       $trman = 0;
-      $trtajm = $utimes[0][$x+1][1];
-      if (!$trtajm) $trtajm = 60000;
-      for ($y = 1;$y < $c;$y++) {
-        if ($utimes[$y][$x+1][1] > 0) {
-          if ($utimes[$y][$x+1][1] < $trtajm) {
-            $trtajm = $utimes[$y][$x+1][1];
+      $firstTime = (int)($utimes[0][$x + 1][1] ?? 0);
+      $trtajm = ($firstTime > 0) ? min($firstTime, 60000) : 60000;
+      for ($y = 1; $y < $c; $y++) {
+        $time = (int)($utimes[$y][$x + 1][1] ?? 0);
+        if ($time > 0) {
+          $time = min($time, 60000);
+          if ($time < $trtajm) {
+            $trtajm = $time;
             $trman = $y;
-          } else {
-            if ($utimes[$y][$x+1][1] == $trtajm) {
-              $trman = -1;
-            }
+          } elseif ($time == $trtajm) {
+            $trman = -1;
           }
         }
       }
@@ -189,6 +189,9 @@
         if ($y == $trman || $trman == -1) $str = "";
 
           $playerTime = (int)($utimes[$y][$x + 1][1] ?? 0);
+          if ($playerTime <= 0) {
+            $str = "";
+          }
           $timeHtml = ($playerTime <= 0)
           ? ""
           : sttime($dudes[$y], $x + 1, $playerTime, true, $trman == $y, $t);
@@ -212,7 +215,7 @@
       $tt = 0;
       for ($x = 0;$x < 54;$x++) {
       $time = (int)($utimes[$y][$x + 1][1] ?? 0);
-      $tt += ($time > 0) ? $time : 60000;
+      $tt += ($time > 0) ? min($time, 60000) : 60000;
       }
       $tts[$y] = $tt;
       if ($tts[$y] < $tts[$ttrman]) $ttrman = $y;
