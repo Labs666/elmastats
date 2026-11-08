@@ -19,8 +19,7 @@
     $tt = 0;
     for ($x = 0;$x < 54;$x++) {
       $cTime = (int)($utimes[$x + 1][1] ?? 0);
-      if ($cTime <= 0) $cTime = 60000;
-      $tt += $cTime;
+      $tt += ($cTime > 0) ? min($cTime, 60000) : 60000;
     }
     $str = formatElmaTime($tt);
   } else {
