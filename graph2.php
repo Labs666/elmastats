@@ -39,8 +39,11 @@
     $maxtt += $ttborder;
     $mintt -= $ttborder;
     $ttspan = $maxtt-$mintt;
-    $timespan = $tss[$n-1]-$tss[0];
-    
+    $firstYear = (int)date("Y", $tss[0]);
+    $lastYear = (int)date("Y", $tss[$n - 1]);
+    $axisStart = $tss[0];
+    $axisEnd = time();
+    $timespan = $axisEnd - $axisStart;
     
     //robbla
     $bort = 8; $borb = 48;
@@ -113,44 +116,49 @@
     }
       
     //bottom text and vertical lines aand ticks
-    /*$domi = floor($canw/70);
-    for ($x = 0;$x < $n;$x++) {
-      imageline($img, $borl+($segw*$x), $imgh-$borb, $borl+($segw*$x), $imgh-$borb+4, $c_ticks);
-      imageline($img, $borl+($segw*$x), $bort, $borl+($segw*$x), $bort+$canh, $c_line2);
-      if ($n <= $domi || $x%ceil($n/$domi) == 0) {
-        imagestring($img, 2, $borl+($segw*$x)-20, $imgh-$borb+8, date("d/m/y", ttime($tss[$x])), $c_text);
-        imagestring($img, 2, $borl+($segw*$x)-(strlen(formatElmaTime($tts[$x]))*$charw)/2, $imgh-$borb+24, formatElmaTime($tts[$x]), $c_text);
+    $lastYear = max((int)date("Y", $tss[$n - 1]), (int)date("Y"));
+    $axisEndYear = (int)(ceil($lastYear / 2) * 2);
+
+    for ($year = $firstYear; $year <= $axisEndYear; $year++) {
+      $tickTime = mktime(0, 0, 0, 1, 1, $year);
+    if ($tickTime >= $axisStart && $tickTime <= $axisEnd) {
+      $linex = $borl + ($tickTime - $axisStart) * ($canw / $timespan);
+
+      imageline($img, $linex, $bort + $canh, $linex, $bort + $canh + 4, $c_ticks);
+      imageline($img, $linex, $bort, $linex, $bort + $canh, $c_line2);
+    }
+
+    $firstFullYear = (int)date("Y", $axisStart) + 1;
+
+    if (
+      $tickTime >= $axisStart
+      && $tickTime <= $axisEnd
+      && $year >= $firstFullYear
+  //  && ($year - $firstFullYear) % 2 === 0
+    ) {
+        $yearText = (string)$year;
+        $textWidth = imagefontwidth(2) * strlen($yearText);
+        $textX = (int)round($linex - $textWidth / 2);
+
+        imagestring($img, 2, $textX, $bort + $canh + 18, $yearText, $c_text);
       }
-    }*/
-    
-    $tickreso = 86400;
-    $lastmon = "";
-    //for ($x = 0;$x < floor($tss[$n-1]/$tickreso)-floor($tss[0]/$tickreso);$x++) {
-    for ($x = floor($tss[$n-1]/$tickreso)-floor($tss[0]/$tickreso);$x >= 0;$x--) {
-      $ticktt = (floor($tss[$n-1]/$tickreso)-$x)*$tickreso;
-      //$ticktt = $x*$tickreso;
-      //$liney = $bort+$canh-($ticktt-$mintt)*$ttm;
-      $linex = $borl+($ticktt-$tss[0])*($canw/$timespan);
-      if ($linex > $borl) {
-        imageline($img, $linex, $bort+$canh, $linex, $bort+$canh+4, $c_ticks);
-        imageline($img, $linex, $bort, $linex, $bort+$canh, $c_line2);
-      }
-      $str = date("j", $ticktt);
-      if ($str%5 == 0 || $str == 1)
-        imagestring($img, 2, $linex-(imagefontwidth(2)*strlen($str)/2), $bort+$canh+2, $str, $c_text);
-      
-      $str = date("M", $ticktt);
-      if ($str != $lastmon)
-        imagestring($img, 2, $linex-(imagefontwidth(2)*strlen($str)/2), $bort+$canh+18, $str, $c_text);
-      
-      $lastmon = $str;
+    }
+
+    $currentTime = time();
+
+    if ($currentTime > $tss[$n - 1]) {
+      $lastX = $borl + round(($tss[$n - 1] - $axisStart) / $timespan * $canw);
+      $currentX = $borl + round(($currentTime - $axisStart) / $timespan * $canw);
+      $lastY = $bort + $canh - ($tts[$n - 1] - $mintt) * $ttm;
+
+      imageline($img, $lastX, $lastY, $currentX, $lastY, $c_line);
     }
     
     
     //tt line
     for ($x = 0;$x < $n-1;$x++) {
       //imageline($img, $borl+round($x*$segw), $bort+$canh-($tts[$x]-$mintt)*$ttm, $borl+round(($x+1)*$segw), $bort+$canh-($tts[$x+1]-$mintt)*$ttm, $c_line);
-      imageline($img, $borl+round(($tss[$x]-$tss[0])/$timespan*$canw), $bort+$canh-($tts[$x]-$mintt)*$ttm, $borl+round(($tss[$x+1]-$tss[0])/$timespan*$canw), $bort+$canh-($tts[$x+1]-$mintt)*$ttm, $c_line);
+      imageline($img, $borl + round(($tss[$x] - $axisStart) / $timespan * $canw), $bort + $canh - ($tts[$x] - $mintt) * $ttm, $borl + round(($tss[$x + 1] - $axisStart) / $timespan * $canw), $bort + $canh - ($tts[$x + 1] - $mintt) * $ttm, $c_line);
     }
     
     
