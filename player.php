@@ -55,17 +55,46 @@
       $cItem = $users[$_GET["player"]];
       echo("<b>Times (updated " . gmdate("F jS, Y - H:i:s", ttime(filemtime("statefilesz/" . $cItem["nick"] . ".dat"))) . ")</b> ");
       echo("<a href=\"txt.php?u=" . $cItem["nick"] . "\">download stats.txt</a><br/><br/>");
-      echo("<div class=\"tabber\">");
+      echo("<div class=\"tabber\" style=\"width:fit-content;\">");
 
-      echo("<div class=\"tabbertab\" title=\"Times\">");
+      echo("<div class=\"tabbertab\" title=\"Times\" style=\"width:fit-content;\">");
+
+$levelTimesByUser = array();
+$totalTimesByUser = array();
+
+foreach ($users as $otherUser) {
+  $otherNick = $otherUser["nick"] ?? "";
+  if ($otherNick === "" || $otherNick === "!.gitignore" || $otherNick === "*") {
+    continue;
+  }
+
+  $otherTimes = stateTimes($otherNick, $otherUser["elmaname"] ?? "");
+  if ($otherTimes === NULL) {
+    continue;
+  }
+
+  $otherTotal = 0;
+
+  for ($level = 1; $level <= 54; $level++) {
+    $otherTime = (int)($otherTimes[$level][1] ?? 0);
+
+    if ($otherTime > 0) {
+      $levelTimesByUser[$level][] = $otherTime;
+      $otherTotal += min($otherTime, 60000);
+    } else {
+      $otherTotal += 60000;
+    }
+  }
+
+  $totalTimesByUser[] = $otherTotal;
+}
 
       echo("<table class=\"times\" cellpadding=\"2\">");
       echo("<tr><th class=\"times\" width=\"180px\">Internal</th>");
       echo("<th class=\"times\" width=\"81px\"><center>Best time</center></th>");
-      echo("<th class=\"times\" width=\"16px\"></th>"); // Spacer
+      echo("<th class=\"times\" style=\"padding-left:4px; padding-right:4px;\"><center>Pos.</center></th>");
       echo("<th class=\"times\" width=\"81px\"><center>Average</center></th>");
       echo("<th class=\"times\" width=\"81px\"><center>Diff. average</center></th>");
-      echo("<th class=\"times\" width=\"16px\"></th>"); // Spacer
       echo("<th class=\"times\" width=\"81px\"><center>Next target</center></th>");
       echo("<th class=\"times\" width=\"81px\"><center>Diff. next</center></th>");
       echo("</tr>");
@@ -76,16 +105,24 @@
       for ($x = 0;$x < 54;$x++) {
         echo("<tr><td class=\"times\">" . internal($x+1, true) . "</td>");
         $bestTime = (int)($utimes[$x + 1][1] ?? 0);
+        $position = "-";
+        if ($bestTime > 0) {
+          $position = 1;
+          foreach ($levelTimesByUser[$x + 1] ?? array() as $otherTime) {
+            if ($otherTime < $bestTime) {
+              $position++;
+            }
+          }
+        }
         if ($bestTime <= 0) {
           $tt += 60000;
           $ttIfBeatTargets += 60000;
-          $avgtt += 600000;
+          $avgtt += 60000;
 
           echo("<td class=\"times\"><center></center></td>");
-          echo("<td class=\"times\"></td>"); // Spacer
+          echo("<td class=\"times\" style=\"padding-left:4px; padding-right:4px;\"><center><span style=\"display:inline-block; width:4ch; text-align:right;\">-</span></center></td>");
           echo("<td class=\"times\"><center>" . sttime($cItem["nick"], $x + 1, 60000, true, false, target(60000, $x + 1)) . "</center></td>");
           echo("<td class=\"times\"><center>-</center></td>");
-          echo("<td class=\"times\"></td>"); // Spacer
           $emptyTarget = target(60000, $x + 1);
           if ($emptyTarget > 0) {
             $nextTargetTime = (int)$targets[$x + 1][$emptyTarget - 1];
@@ -109,7 +146,7 @@
         if ($bestTime <= 0) {
           $tt += 60000;
           $ttIfBeatTargets += 60000;
-          $avgtt += 600000;
+          $avgtt += 60000;
 
           if ($t > 0) {
             $ttChangeIfBeatTarget = abs((int)$targets[$x + 1][$t - 1]);
@@ -123,21 +160,21 @@
           continue;
         }
         echo("<td class=\"times\"><center>" . sttime($cItem["nick"], $x+1, $utimes[$x+1][1], true, false, $t) . "</center></td>");
-        echo("<td class=\"times\"></td>"); // Spacer
+        echo("<td class=\"times\" style=\"padding-left:4px; padding-right:4px;\"><center><span style=\"display:inline-block; width:4ch; text-align:right;\">" . $position . ".</span></center></td>");
         $avg = 0;
         for ($y = 0;$y < 10;$y++) {
           $value = $utimes[$x+1][$y+1] ?? 0;
-          $avg += (!$value ? 60000 : (int)$value);
+          $value = (int)$value;
+          $avg += ($value > 0) ? min($value, 60000) : 60000;
           //$avg += ($utimes[$x+1][$y+1] == 0 ? 60000 : $utimes[$x+1][$y+1]);
         }
-        $avgtt += $avg;
         $avg = round($avg/10);
+        $avgtt += $avg;
         $AvgDiff = $avg - (int)$utimes[$x+1][1];
         echo("<td class=\"times\"><center>" . sttime($cItem["nick"], $x+1, $avg , true, false, target($avg, $x+1)) . "</center></td>");
         echo("<td class=\"times\"><center>" . ($AvgDiff > 0 ? "+" . formatElmaTime($AvgDiff) : "-") . "</center></td>");
-        echo("<td class=\"times\"></td>"); // Spacer
 
-        $tt += (int)($utimes[$x+1][1] == 0 ? 60000 : $utimes[$x+1][1]);
+        $tt += min((int)$utimes[$x + 1][1], 60000);
         $ttIfBeatTargets += (int)($utimes[$x+1][1] == 0 ? 60000 : $utimes[$x+1][1]);
 
         if($t > 0) {
@@ -150,23 +187,56 @@
 
         echo("</tr>");
       }
-      $avgtt = round($avgtt/10);
       $TTandAvgDiff = $avgtt - $tt;
-      $sumofdiff = $tt - $ttIfBeatTargets;
+      $targetTotals = array_fill(0, 8, 0);
+      for ($level = 1; $level <= 54; $level++) {
+        for ($targetIndex = 0; $targetIndex < 8; $targetIndex++) {
+          $targetTotals[$targetIndex] += (int)($targets[$level][$targetIndex] ?? 0);
+        }
+      }
+
+      $closestTargetTotal = null;
+      $closestTargetIndex = null;
+
+      foreach ($targetTotals as $targetIndex => $targetTotal) {
+        if ($targetTotal > 0 && $targetTotal <= $tt
+            && ($closestTargetTotal === null || $targetTotal > $closestTargetTotal)) {
+          $closestTargetTotal = $targetTotal;
+          $closestTargetIndex = $targetIndex;
+        }
+      }
+
+      $sumofdiff = ($closestTargetTotal !== null) ? $tt - $closestTargetTotal : null;
 
       echo("<tr>");
-      for ($column = 0; $column < 8; $column++) {
+      for ($column = 0; $column < 7; $column++) {
       echo("<th class=\"times\"></th>");
       }
       echo("</tr>");
+      $totalPosition = 1;
+      foreach ($totalTimesByUser as $otherTotal) {
+        if ($otherTotal < $tt) {
+          $totalPosition++;
+        }
+      }
       echo("<tr><td class=\"times\">Total time</td>");
       echo("<td class=\"times\"><center>" . coloredtttime($tt, true) . "</center></td>");
-      echo("<td class=\"times\"></td>"); // Spacer
+      echo("<td class=\"times\" style=\"padding-left:4px; padding-right:4px;\"><center><span style=\"display:inline-block; width:4ch; text-align:right;\">" . $totalPosition . ".</span></center></td>");
       echo("<td class=\"times\"><center>" . coloredtttime($avgtt, true) . "</center></td>");
       echo("<td class=\"times\"><center>" . ($TTandAvgDiff > 0 ? "+" . formatElmaTime($TTandAvgDiff, true) : "-") . "</center></td>");
-      echo("<td class=\"times\"></td>"); // Spacer
-      echo("<td class=\"times\"><center>" . coloredtttime($ttIfBeatTargets, true) . "</center></td>");
-      echo("<td class=\"times\"><center>" . ($sumofdiff > 0 ? "+" . formatElmaTime($sumofdiff, true) : "-")  . "</center></td>");
+      $targetTotalColors = array(
+        "#FF0000", "#AA43DD", "#FF66CC", "#FF9C00",
+        "#FFF200", "#00FF00", "#0090FF", "#F3F5CA"
+      );
+      $nextTargetHtml = "-";
+      if ($closestTargetTotal !== null) {
+        $color = $targetTotalColors[$closestTargetIndex] ?? "#CCCCCC";
+        $nextTargetHtml = '<span style="color:' . $color . ';">'
+          . formatElmaTime($closestTargetTotal, true)
+          . '</span>';
+      }
+      echo("<td class=\"times\"><center>" . $nextTargetHtml . "</center></td>");
+      echo("<td class=\"times\"><center>" . ($sumofdiff !== null && $sumofdiff > 0 ? "+" . formatElmaTime($sumofdiff, true) : "-") . "</center></td>");
       echo("</tr>");
 
       echo("</table>");
@@ -214,7 +284,8 @@
           /*} else {
             echo("<td class=\"times\"><center>" . formatElmaTime($utimes[$x+1][$y+1], true) . "</center></td>");
           }*/
-          $avg += (!$utimes[$x+1][$y+1] ? 60000 : $utimes[$x+1][$y+1]);
+          $value = (int)($utimes[$x + 1][$y + 1] ?? 0);
+          $avg += ($value > 0) ? min($value, 60000) : 60000;
         }
 
         $avg = round($avg/10);
@@ -234,9 +305,12 @@
       echo("</table>");
       echo("</div>");
 
-
       echo("<div class=\"tabbertab\" title=\"Improvements\">");
-      echo("Total time improvement (since 14/12/10)<br/><br/>");
+      $firstUploadHistory = htimes("historyz/" . $cItem["nick"] . "_0");
+      $firstUploadTime = $firstUploadHistory[0][0] ?? 0;
+      $sinceDate = $firstUploadTime > 0 ? date("F jS, Y", $firstUploadTime) : "unknown";
+
+      echo("Total time improvement (since " . $sinceDate . ")<br/><br/>");
       $n = 0;
       while (file_exists("historyz/" . $_GET["player"] . "_" . $n)) $n++;
       if ($n > 1) {
