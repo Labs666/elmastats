@@ -120,7 +120,7 @@ foreach ($users as $otherUser) {
           $avgtt += 60000;
 
           echo("<td class=\"times\"><center></center></td>");
-          echo("<td class=\"times\" style=\"padding-left:4px; padding-right:4px;\"><center><span style=\"display:inline-block; width:4ch; text-align:right;\">-</span></center></td>");
+          echo("<td class=\"times\" style=\"padding-left:4px; padding-right:4px;\"><center><span style=\"display:inline-block; width:5ch; text-align:center;\">-</span></center></td>");
           echo("<td class=\"times\"><center>" . sttime($cItem["nick"], $x + 1, 60000, true, false, target(60000, $x + 1)) . "</center></td>");
           echo("<td class=\"times\"><center>-</center></td>");
           $emptyTarget = target(60000, $x + 1);
@@ -160,7 +160,7 @@ foreach ($users as $otherUser) {
           continue;
         }
         echo("<td class=\"times\"><center>" . sttime($cItem["nick"], $x+1, $utimes[$x+1][1], true, false, $t) . "</center></td>");
-        echo("<td class=\"times\" style=\"padding-left:4px; padding-right:4px;\"><center><span style=\"display:inline-block; width:4ch; text-align:right;\">" . $position . ".</span></center></td>");
+        echo("<td class=\"times\" style=\"padding-left:4px; padding-right:4px;\"><center><span style=\"display:inline-block; width:5ch; text-align:right;\">" . $position . ".</span></center></td>");
         $avg = 0;
         for ($y = 0;$y < 10;$y++) {
           $value = $utimes[$x+1][$y+1] ?? 0;
@@ -221,7 +221,7 @@ foreach ($users as $otherUser) {
       }
       echo("<tr><td class=\"times\">Total time</td>");
       echo("<td class=\"times\"><center>" . coloredtttime($tt, true) . "</center></td>");
-      echo("<td class=\"times\" style=\"padding-left:4px; padding-right:4px;\"><center><span style=\"display:inline-block; width:4ch; text-align:right;\">" . $totalPosition . ".</span></center></td>");
+      echo("<td class=\"times\" style=\"padding-left:4px; padding-right:4px;\"><center><span style=\"display:inline-block; width:5ch; text-align:right;\">" . $totalPosition . ".</span></center></td>");
       echo("<td class=\"times\"><center>" . coloredtttime($avgtt, true) . "</center></td>");
       echo("<td class=\"times\"><center>" . ($TTandAvgDiff > 0 ? "+" . formatElmaTime($TTandAvgDiff, true) : "-") . "</center></td>");
       $targetTotalColors = array(
