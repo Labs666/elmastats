@@ -53,8 +53,16 @@
 
 
   $utimes = array();
-  for ($x = 0;$x < $c;$x++) {
+  for ($x = 0; $x < $c; $x++) {
     $utimes[$x] = stateTimes($dudes[$x]);
+  }
+
+  $compareTimes = array();
+  for ($x = 0; $x < $c; $x++) {
+    for ($level = 1; $level <= 54; $level++) {
+      $time = (int)($utimes[$x][$level][1] ?? 0);
+      $compareTimes[$x][$level] = ($time > 0) ? min($time, 60000) : 0;
+    }
   }
   $ok = true;
   for ($x = 0;$x < $c;$x++) {
@@ -104,28 +112,27 @@
         if ($utimes[$y][$x+1][1] == 0) $str = "";
         //echo("<td class=\"times\" title=\"" . $str . "\"><center>" . $bulle . formatElmaTime($utimes[$y][$x+1][1], true) . $bulle2 . "</center></td>");
         $playerTime = (int)($utimes[$y][$x + 1][1] ?? 0);
+        if ($playerTime <= 0) {
+        $str = "";
+        }
         $timeHtml = ($playerTime > 0)
           ? sttime($dudes[$y], $x + 1, $playerTime, true, $trman == $y)
           : "";
         echo("<td class=\"times\" title=\"" . $str . "\"><center>" . $bulle . $timeHtml . $bulle2 . "</center></td>");
       }
-      if ($c == 2) {
-        $time1 = (int)($utimes[0][$x + 1][1] ?? 0);
-        $time2 = (int)($utimes[1][$x + 1][1] ?? 0);
-
-      if ($time1 <= 0) $time1 = 60000;
-      if ($time2 <= 0) $time2 = 60000;
-
-      if ($time2 > $time1) {
-        $wry = "-";
+    if ($c == 2) {
+      $rawTime1 = (int)($utimes[0][$x + 1][1] ?? 0);
+      $rawTime2 = (int)($utimes[1][$x + 1][1] ?? 0);
+      if ($rawTime1 <= 0 || $rawTime2 <= 0) {
+        $diffText = "-";
       } else {
-        $wry = "+";
-    }
-
-    $diff2 = abs($time1 - $time2);
-    $diffText = ($diff2 === 0) ? "No diff." : $wry . formatElmaTime($diff2);
-
-    echo("<td class=\"times\"><center>" . $diffText . "</center></td>");
+        $time1 = (int)$compareTimes[0][$x + 1];
+        $time2 = (int)$compareTimes[1][$x + 1];
+        $wry = ($time2 > $time1) ? "-" : "+";
+        $diff2 = abs($time1 - $time2);
+        $diffText = ($diff2 === 0) ? "No diff." : $wry . formatElmaTime($diff2);
+      }
+      echo("<td class=\"times\"><center>" . $diffText . "</center></td>");
     }
     echo("</tr>");
     }
@@ -139,13 +146,10 @@
     $tts = array();
     for ($y = 0;$y < $c;$y++) {
       $tt = 0;
-      for ($x = 0;$x < 54;$x++) {
-        if (!$utimes[$y][$x+1][1]) {
-          $tt += 60000;
-        } else {
-          $tt += $utimes[$y][$x+1][1];
-        }
-      }
+    for ($x = 0; $x < 54; $x++) {
+      $time = (int)($compareTimes[$y][$x + 1] ?? 0);
+      $tt += ($time > 0) ? $time : 60000;
+    }
       $tts[$y] = $tt;
       if ($tts[$y] < $tts[$ttrman]) $ttrman = $y;
     }
@@ -180,9 +184,28 @@
     echo("</table><br/><br/>");
     echo("<b>Victories</b><br/><br/>");
     echo("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
-    for ($x = 0;$x < $c;$x++) {
-      echo("<tr><td>" . man($dudes[$x]) . "&nbsp;</td>");
-      echo("<td>" . ($victories[$x]+0) . " victories</td></tr>");
+    $victoryRows = array();
+
+    for ($x = 0; $x < $c; $x++) {
+      $wins = (int)($victories[$x] ?? 0);
+      if ($wins > 0) {
+        $victoryRows[] = array(
+          "nick" => $dudes[$x],
+          "wins" => $wins
+        );
+      }
+    }
+
+    usort($victoryRows, function ($a, $b) {
+      if ($a["wins"] !== $b["wins"]) {
+        return $b["wins"] <=> $a["wins"];
+      }
+      return strcasecmp($a["nick"], $b["nick"]);
+    });
+
+    foreach ($victoryRows as $row) {
+      echo("<tr><td>" . man($row["nick"]) . "&nbsp;</td>");
+      echo("<td>" . $row["wins"] . " victories</td></tr>");
     }
     echo("<tr><td colspan=\"2\">&nbsp;</td></tr>");
     echo("<tr><td><b>Best TT</b>&nbsp;</td><td>" . man($dudes[$ttrman]) . "</td></tr>");
