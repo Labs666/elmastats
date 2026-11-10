@@ -24,7 +24,7 @@ anyway heres some lists<br/><br/><br/>
     return $data;
   }
   
-  echo("<div class=\"lefty\">");
+  echo("<div class=\"lefty\" style=\"margin-right:16px;\">");
   echo("<div class=\"box2\">");
   echo("<b>Last improvements</b><br/><br/>");
   $lines = is_readable("newtajms2") ? file("newtajms2") : [];
@@ -118,7 +118,7 @@ anyway heres some lists<br/><br/><br/>
   echo("<b>Last TT minute breaks</b><br/><br/>");
   $lines = file("newttz");
   echo("<table>");
-  echo("<tr><th width=\"160px\">Kuski</th><th width=\"32px\">TT</th><th>When</th></tr>");
+  echo("<tr><th width=\"160px\">Kuski</th><th width=\"28px\">TT</th><th>When</th></tr>");
   $currentBreakTTs = array();
   $shownBreaks = array();
   if ($lines) {
