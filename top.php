@@ -5,6 +5,8 @@
   ini_set('session.gc_maxlifetime', 86400);
   ini_set('session.cookie_lifetime', 86400);
 
+  session_save_path(__DIR__ . '/sessions');
+
   session_start();
   error_reporting(E_ERROR);
 
