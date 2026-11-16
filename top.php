@@ -2,6 +2,15 @@
   //header("Refresh: 0; url=http://oz.kiev.ua/nw/");
   //die();
 
+  ini_set('session.gc_maxlifetime', 86400);
+  ini_set('session.cookie_lifetime', 86400);
+
+  $sessionDir = __DIR__ . '/sessions';
+  if (!is_dir($sessionDir)) {
+      mkdir($sessionDir, 0700, true);
+  }
+  session_save_path($sessionDir);
+
   session_start();
   error_reporting(E_ERROR);
 
