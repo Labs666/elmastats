@@ -21,9 +21,8 @@
   $top = array();
   for ($y = 0;$y < $c;$y++) {
     $cItem["nick"] = $unicks[$y];
-    $cItem["time"] = $utimes[$y][$int][1];
-    if (!$cItem["time"]) $cItem["time"] = 60000;
-    if ($cItem["time"] < 60000) $top[] = $cItem;
+    $cItem["time"] = (int)($utimes[$y][$int][1] ?? 0);
+    if ($cItem["time"] > 0) $top[] = $cItem;
   }
   usort($top, "cmp");
   
