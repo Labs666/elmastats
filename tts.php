@@ -54,11 +54,7 @@
     if ($ctt < 60000*54) {
       $cItem["time"] = $ctt;
       $cItem["avgtime"] = $avgtt;
-      // Prevent users from breaking the Avg/Regular TT difference stat by having less than 540 times logged.
-      if($finished == 540) { 
-        $cItem["timediff"] = $avgtt - $ctt; 
-      }
-      else $cItem["timediff"] = $ctt;
+      $cItem["timediff"] = $avgtt - $ctt;
       $cItem["fnsh"] = $finished;
       $tts[] = $cItem;
     }
