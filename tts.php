@@ -39,17 +39,18 @@
       $ctt += (int)$cTime;
 
       //Average calculations (and # of times handling)
-      for ($z = 0;$z < 10;$z++) {
-        $xTime = $utimes[$y][$x+1][$z+1];
-        if (!$xTime) {
-          $AvgTime += 60000;
-        } else {
-          $AvgTime += (int)$xTime;
+      for ($z = 0; $z < 10; $z++) {
+        $xTime = (int)($utimes[$y][$x + 1][$z + 1] ?? 0);
+        if ($xTime > 0) {
+          $AvgTime += min($xTime, 60000);
           $finished++;
           $hasLevelFinish = true;
+        } else {
+          $AvgTime += 60000;
         }
       }
-      $avgtt += $AvgTime/10;
+
+      $avgtt += round($AvgTime / 10);
       if ($hasLevelFinish) $finishedLevels++;
     }
 
