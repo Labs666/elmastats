@@ -42,13 +42,13 @@
     //Total times
     echo("<tr><td class=\"times\">" . "Total time: " . "</td>");
     echo("<td class=\"times\"><center>" . formatElmaTime($tt0) . "</center></td>");
-    echo("<td class=\"times\"><center>" . formatElmaTime($tt1) . "</center></td>");
-    echo("<td class=\"times\"><center>" . formatElmaTime($tt2) . "</center></td>");
-    echo("<td class=\"times\"><center>" . formatElmaTime($tt3) . "</center></td>");
-    echo("<td class=\"times\"><center>" . formatElmaTime($tt4) . "</center></td>");
-    echo("<td class=\"times\"><center>" . formatElmaTime($tt5) . "</center></td>");
-    echo("<td class=\"times\"><center>" . formatElmaTime($tt6) . "</center></td>");
-    echo("<td class=\"times\"><center>" . formatElmaTime($tt7) . "</center></td>");
+    echo("<td class=\"times\"><center><a href=\"https://up.elma.online/u/7refxarroc/targetGOD.zip\">" . formatElmaTime($tt1) . "</a></center></td>");
+    echo("<td class=\"times\"><center><a href=\"https://up.elma.online/u/upp1a3fym8/targetLEG.zip\">" . formatElmaTime($tt2) . "</a></center></td>");
+    echo("<td class=\"times\"><center><a href=\"https://up.elma.online/u/alhjjg0xqg/targetWC.zip\">" . formatElmaTime($tt3) . "</a></center></td>");
+    echo("<td class=\"times\"><center><a href=\"https://up.elma.online/u/e6252sj434/targetPRO.zip\">" . formatElmaTime($tt4) . "</a></center></td>");
+    echo("<td class=\"times\"><center><a href=\"https://up.elma.online/u/vomkh0ntxo/targetGOOD.zip\">" . formatElmaTime($tt5) . "</a></center></td>");
+    echo("<td class=\"times\"><center><a href=\"https://up.elma.online/u/yvx3hil14t/targetOK.zip\">" . formatElmaTime($tt6) . "</a></center></td>");
+    echo("<td class=\"times\"><center><a href=\"https://up.elma.online/u/yczpiyye9s/targetBEG.zip\">" . formatElmaTime($tt7) . "</a></center></td>");
   
   echo("</table></div>");
  include("tpo.php"); ?>
