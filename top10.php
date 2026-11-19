@@ -17,6 +17,12 @@
   $victories = array();
   $combinedTT = 0;
 
+  $info = fetchtargetinfo();
+  $wrtt = 0;
+  for ($i = 1; $i <= 54; $i++) {
+      $wrtt += (int)$info[$i]["0"];
+  }
+
   echo("<div class=\"lefty\">");
   for ($x = 0;$x < 54;$x++) {
     $top = array();
@@ -72,8 +78,16 @@
     echo("<td>" . $wins . " records</td></tr>");
   }
   echo("<tr><td colspan=\"2\">&nbsp;</td></tr>");
+  $combinedDisplay = coloredtttime($combinedTT, true);
+  if ($combinedTT <= $wrtt) {
+    $combinedDisplay = preg_replace(
+      '/<span style="color: #[A-Fa-f0-9]+">/',
+      '<span style="color: red;">',
+        $combinedDisplay
+    );
+  }
   echo("<tr><td><b>Combined TT:</b>&nbsp;</td><td>" .
-  coloredtttime($combinedTT, true) . "</td></tr>");
+    $combinedDisplay . "</td></tr>");
     echo("</table>");
     echo("</div>");
 ?>
