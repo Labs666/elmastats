@@ -23,11 +23,12 @@
   // Iterate for each user
   for ($y = 0;$y < $c;$y++) {
     // Preliminary variable declarations
-    $ctt = 0; $avgtt = 0; $finished = 0; $cItem["nick"] = $unicks[$y];
+    $ctt = 0; $avgtt = 0; $finished = 0; $finishedLevels = 0; $cItem["nick"] = $unicks[$y];
 
     // Iterate for each internal level
     for ($x = 0;$x < 54;$x++) {
       $AvgTime = 0;
+      $hasLevelFinish = false;
 
       //TT calculations
       $cTime = $utimes[$y][$x+1][1];
@@ -43,24 +44,27 @@
         if (!$xTime) {
           $AvgTime += 60000;
         } else {
-          $AvgTime += min((int)$xTime, 60000);
+          $AvgTime += (int)$xTime;
           $finished++;
+          $hasLevelFinish = true;
         }
       }
-      $avgtt += round($AvgTime / 10);
+      $avgtt += $AvgTime/10;
+      if ($hasLevelFinish) $finishedLevels++;
     }
 
     // Store in array
     if ($ctt < 60000*54) {
       $cItem["time"] = $ctt;
       $cItem["avgtime"] = $avgtt;
-      // Prevent users from breaking the Avg/Regular TT difference stat by having less than 540 times logged.
-      if($finished == 540) { 
-        $cItem["timediff"] = $avgtt - $ctt; 
+      // Prevent users from breaking the Avg/Regular TT difference stat by having to finish all levels.
+      if ($finishedLevels == 54) {
+        $cItem["timediff"] = $avgtt - $ctt;
+      } else {
+        $cItem["timediff"] = $ctt;
       }
-      else $cItem["timediff"] = $ctt;
-      $cItem["fnsh"] = $finished;
-      $tts[] = $cItem;
+        $cItem["fnsh"] = $finished;
+        $tts[] = $cItem;
     }
   }
 
