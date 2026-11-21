@@ -27,13 +27,13 @@
       //generate table
       echo("<tr><td class=\"times\">" . internal($x+1, true) . "</td>");
       echo("<td class=\"times\"><center>" . sttime("targets", $x+1, $info[$x+1]["0"], true, false, 0, false). "</center></td>");
-      echo("<td class=\"times\"><center>" . sttime("targets", $x+1, $info[$x+1]["1"], true, false, 1, false). "</center></td>");
-      echo("<td class=\"times\"><center>" . sttime("targets", $x+1, $info[$x+1]["2"], true, false, 2, false). "</center></td>");
-      echo("<td class=\"times\"><center>" . sttime("targets", $x+1, $info[$x+1]["3"], true, false, 3, false). "</center></td>");
-      echo("<td class=\"times\"><center>" . sttime("targets", $x+1, $info[$x+1]["4"], true, false, 4, false). "</center></td>");
-      echo("<td class=\"times\"><center>" . sttime("targets", $x+1, $info[$x+1]["5"], true, false, 5, false). "</center></td>");
-      echo("<td class=\"times\"><center>" . sttime("targets", $x+1, $info[$x+1]["6"], true, false, 6, false). "</center></td>");
-      echo("<td class=\"times\"><center>" . sttime("targets", $x+1, $info[$x+1]["7"], true, false, 7, false). "</center></td>");
+      echo("<td class=\"times\"><center>" . tartime($x+1, $info[$x+1]["1"], 1) . "</center></td>");
+      echo("<td class=\"times\"><center>" . tartime($x+1, $info[$x+1]["2"], 2) . "</center></td>");
+      echo("<td class=\"times\"><center>" . tartime($x+1, $info[$x+1]["3"], 3) . "</center></td>");
+      echo("<td class=\"times\"><center>" . tartime($x+1, $info[$x+1]["4"], 4) . "</center></td>");
+      echo("<td class=\"times\"><center>" . tartime($x+1, $info[$x+1]["5"], 5) . "</center></td>");
+      echo("<td class=\"times\"><center>" . tartime($x+1, $info[$x+1]["6"], 6) . "</center></td>");
+      echo("<td class=\"times\"><center>" . tartime($x+1, $info[$x+1]["7"], 7) . "</center></td>");
       echo("</tr>\n");
     }
     //Spacer row
