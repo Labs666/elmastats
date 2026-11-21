@@ -106,33 +106,23 @@
     //return "<a href=\"natl.php?country=" . $country . "\"><img style=\"vertical-align: middle\" alt=\"" . $country . "\" src=\"flags/flag.png\"/></a>";
   }
 
-  function tartime($intnum, $time, $target) {
+  function tartime($intnum, $time, $target, $emptyif0 = false, $lead = false) {
     $tcolors = array("FF0000", "AA43DD", "FF66CC", "FF9C00", "FFF200", "00FF00", "0090FF", "F3F5CA");
-    $targetnames = array("wr", "god", "leg", "wc", "pro", "good", "ok", "beg");
-    $str1 = "";
-    $str2 = "";
-    $recname = "targetrecs/"  . $targetnames[$target] . str_pad($intnum, 2, "0", STR_PAD_LEFT) . ".rec";
-
-    if(file_exists($recname)) {
-      $lstr = "class=\"ntime\" ";
-      if ($target > -1) $lstr = "class=\"ttime" . $target . "\" ";
-      if ($target == 8) $lstr = "class=\"ntime\" ";
-      if ($lead and $target == -1) $lstr = "class=\"ltime\" ";
-      $str1 = "<a " . $lstr . "href=\"" . $recname . "\">";
-      $str2 = "</a>";
-      return $str1 . formatElmaTime($time, $emptyif0) . $str2;
-    } else {
-      $str1 = "";
-      $str2 = "";
-      if ($target > -1) {
-        $str1 = "<span style=\"color: #" . $tcolors[$target] . "\">";
-        $str2 = "</span>";
-      }
-      if ($target == 8) {
-        $str1 = ""; $str2 = "";
-      }
-      return $str1 . formatElmaTime($time, $emptyif0) . $str2;
+    $targetnames = array("WR", "GOD", "LEG", "WC", "PRO", "GOOD", "OK", "BEG");
+    if (!isset($targetnames[$target])) {
+      return formatElmaTime($time, $emptyif0);
     }
+    $recname = "targetrecs2/"
+      . str_pad($intnum, 2, "0", STR_PAD_LEFT)
+      . "target" . $targetnames[$target] . ".rec";
+    if (file_exists($recname)) {
+      return "<a class=\"ttime" . $target . "\" href=\"" . $recname . "\">"
+        . formatElmaTime($time, $emptyif0)
+        . "</a>";
+    }
+    return "<span style=\"color: #" . $tcolors[$target] . "\">"
+      . formatElmaTime($time, $emptyif0)
+      . "</span>";
   }
 
   function sttime($nick, $intnum, $time, $emptyif0 = false, $lead = false, $target = -1, $reclink = true) {
