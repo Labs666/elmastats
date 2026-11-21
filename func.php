@@ -108,12 +108,12 @@
 
   function tartime($intnum, $time, $target) {
     $tcolors = array("FF0000", "AA43DD", "FF66CC", "FF9C00", "FFF200", "00FF00", "0090FF", "F3F5CA");
-    $targetnames = array("wr", "god", "leg", "wc", "pro", "good", "ok", "beg");
+    $targetnames = array("WR", "GOD", "LEG", "WC", "PRO", "GOOD", "OK", "BEG");
     $str1 = "";
     $str2 = "";
-    $recname = "targetrecs/"  . $targetnames[$target] . str_pad($intnum, 2, "0", STR_PAD_LEFT) . ".rec";
+    $recname = "targetrecs2/" . str_pad($intnum, 2, "0", STR_PAD_LEFT) . "target" . $targetnames[$target] . ".rec";
 
-    if(file_exists($recname)) {
+    if (file_exists($recname)) {
       $lstr = "class=\"ntime\" ";
       if ($target > -1) $lstr = "class=\"ttime" . $target . "\" ";
       if ($target == 8) $lstr = "class=\"ntime\" ";
@@ -129,7 +129,8 @@
         $str2 = "</span>";
       }
       if ($target == 8) {
-        $str1 = ""; $str2 = "";
+        $str1 = "";
+        $str2 = "";
       }
       return $str1 . formatElmaTime($time, $emptyif0) . $str2;
     }
